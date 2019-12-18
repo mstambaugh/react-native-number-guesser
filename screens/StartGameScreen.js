@@ -29,10 +29,10 @@ const StartGameScreen = props => {
     }
     setConfirmed(true);
     setEnteredValue('');
-    // we can safely do these two things in this order (w/out replacing enteredValue with an empty string before we have the chance to set and parseInt it b/c of the way react batches the method) 
-    setSelectedNumber(parseInt(enteredValue));
+    setSelectedNumber(enteredValue);
     Keyboard.dismiss();
   };
+  // we can safely do the above two things in this order (w/out replacing enteredValue with an empty string before we have the chance to set and parseInt it b/c of the way react batches the method) 
 // here we'll check if confirmed and then set some special output content 
   let confirmedOutput;
   if (confirmed) {
