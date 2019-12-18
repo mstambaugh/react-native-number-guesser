@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Button, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { StyleSheet, Text, View, Button, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
 
 import Card from '../components/Card';
 import Colors from '../constants/colors';
 import Input from '../components/Input';
+import NumberContainer from '../components/NumberContainer';
+
 const StartGameScreen = props => {
   const [enteredValue, setEnteredValue] = useState('');
   const [confirmed, setConfirmed] = useState(false);
@@ -20,14 +22,28 @@ const StartGameScreen = props => {
 
   const confirmInputHandler = () => {
     const chosenNumber = parseInt(enteredValue);
-    if (chosenNumber === NaN || chosenNumber <= 0 || chosenNumber > 99) { 
+    if (isNaN(chosenNumber) || chosenNumber <= 0 || chosenNumber > 99) { 
+      Alert.alert('Invalid number!', 'Number has to be between 1 and 99.', [{text: 'Okay', style: 'destructive', onPress: resetInputHandler }]
+      );
       return; 
     }
     setConfirmed(true);
     setEnteredValue('');
+    // we can safely do these two things in this order (w/out replacing enteredValue with an empty string before we have the chance to set and parseInt it b/c of the way react batches the method) 
     setSelectedNumber(parseInt(enteredValue));
-// we can safely do these two things in this order (w/out replacing enteredValue with an empty string before we have the chance to set and parseInt it b/c of the way react batches the method) 
+    Keyboard.dismiss();
   };
+// here we'll check if confirmed and then set some special output content 
+  let confirmedOutput;
+  if (confirmed) {
+    confirmedOutput = (
+      <Card style={styles.summaryContainer}>
+        <Text>You Selected</Text>
+        <NumberContainer>{selectedNumber}</NumberContainer>
+        <Button title="START GAME!" color={Colors.primary}/>
+      </Card>
+    );
+  }
 
   return (
     <TouchableWithoutFeedback 
@@ -51,13 +67,16 @@ const StartGameScreen = props => {
           />
           <View style={styles.buttonContainer}>
             <View style={styles.button}>
-              <Button title="Reset" onPress={resetInputHandler} color={Colors.accent} />
+              <Button title="Reset" onPress={resetInputHandler} color={Colors.accentTwo} />
             </View>
             <View style={styles.button}>
-              <Button title="Confirm" onPress={() => { }} color={Colors.primary} />
+              <Button title="Confirm" 
+              onPress={confirmInputHandler} 
+              color={Colors.accentOne} />
             </View>
           </View>
         </Card>
+        {confirmedOutput}
       </View>
     </TouchableWithoutFeedback >
   );
@@ -93,6 +112,11 @@ const styles = StyleSheet.create({
   input: {
     width: 50,
     textAlign: 'center'
+  },
+  summaryContainer: {
+    marginTop: 20, 
+    alignItems: 'center',
+
   }
 
 });
